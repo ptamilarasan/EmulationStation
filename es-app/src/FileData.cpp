@@ -278,10 +278,12 @@ void FileData::launchGame(Window* window)
 	const std::string rom      = Utils::FileSystem::getEscapedPath(getPath());
 	const std::string basename = Utils::FileSystem::getStem(getPath());
 	const std::string rom_raw  = Utils::FileSystem::getPreferredPath(getPath());
+	const std::string rom_dir  = Utils::FileSystem::getParent(getPath());
 
 	command = Utils::String::replace(command, "%ROM%", rom);
 	command = Utils::String::replace(command, "%BASENAME%", basename);
 	command = Utils::String::replace(command, "%ROM_RAW%", rom_raw);
+	command = applyUserProfiles(command, rom_dir);
 
 	Scripting::fireEvent("game-start", rom, basename);
 
@@ -369,4 +371,21 @@ FileData::SortType getSortTypeFromString(std::string desc) {
 	}
 	// if not found default to name, ascending
 	return FileSorts::SortTypes.at(0);
+}
+
+std::string applyUserProfiles(std::string command, std::string rom_dir)
+{
+	if (Settings::getInstance()->getBool("EnableUserProfiles"))
+	{
+		std::string dir = rom_dir + "/save/" + Settings::getInstance()->getString("ActiveUserProfile");
+
+		if (!Utils::FileSystem::exists(dir))
+			Utils::FileSystem::createDirectory(dir);
+		return command + " --save=" + dir + " --savestate=" + dir;
+	}
+	else
+	{
+		return command;
+	}
+
 }

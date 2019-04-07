@@ -122,4 +122,6 @@ private:
 
 FileData::SortType getSortTypeFromString(std::string desc);
 
+std::string applyUserProfiles(std::string command, std::string rom_dir);
+
 #endif // ES_APP_FILE_DATA_H

@@ -144,6 +144,8 @@ void Settings::setDefaults()
 	mStringMap["AudioCard"] = "default";
 	mStringMap["UIMode"] = "Full";
 	mStringMap["UIMode_passkey"] = "uuddlrlrba";
+	mBoolMap["EnableUserProfiles"] = false;
+	mStringMap["ActiveUserProfile"] = "DEFAULT";
 	mBoolMap["ForceKiosk"] = false;
 	mBoolMap["ForceKid"] = false;
 	mBoolMap["ForceDisableFilters"] = false;

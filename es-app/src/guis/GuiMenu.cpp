@@ -24,6 +24,9 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
 	bool isFullUI = UIModeController::getInstance()->isUIModeFull();
 
 	if (isFullUI)
+		addEntry("USER PROFILE", 0x777777FF, true, [this] { OpenUserProfileSettings(); });
+
+	if (isFullUI)
 		addEntry("SCRAPER", 0x777777FF, true, [this] { openScraperSettings(); });
 
 	addEntry("SOUND SETTINGS", 0x777777FF, true, [this] { openSoundSettings(); });
@@ -47,6 +50,27 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
 	addVersionInfo();
 	setSize(mMenu.getSize());
 	setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, Renderer::getScreenHeight() * 0.15f);
+}
+
+void GuiMenu::OpenUserProfileSettings()
+{
+	auto s = new GuiSettings(mWindow, "USER PROFILE");
+
+	auto enable_profiles = std::make_shared<SwitchComponent>(mWindow);
+	enable_profiles->setState(Settings::getInstance()->getBool("EnableUserProfiles"));
+	s->addWithLabel("ENABLE USER PROFILES", enable_profiles);
+	s->addSaveFunc([enable_profiles] { Settings::getInstance()->setBool("EnableUserProfiles", enable_profiles->getState()); });
+
+	auto user_list = std::make_shared< OptionListComponent< std::string > >(mWindow, "USER PROFILE", false);
+	std::vector<std::string> profiles{ "DEFAULT", "JOSHUA", "JONATHAN" };
+
+	for(auto it = profiles.cbegin(); it != profiles.cend(); it++)
+		user_list->add(*it, *it, *it == Settings::getInstance()->getString("ActiveUserProfile"));
+
+	s->addWithLabel("USER PROFILE", user_list);
+	s->addSaveFunc([user_list] { Settings::getInstance()->setString("ActiveUserProfile", user_list->getSelected()); });
+
+	mWindow->pushGui(s);
 }
 
 void GuiMenu::openScraperSettings()
